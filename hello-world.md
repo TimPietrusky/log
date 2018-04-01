@@ -12,10 +12,10 @@ function() {
 * into writing notes
 * online for everyone
 
-# to read
-# and for me 
-# to express what is
-# happening in my head
+1. to read
+2. and for me 
+3. to express what is
+4. happening in my head
 
 > This will be fun
 
