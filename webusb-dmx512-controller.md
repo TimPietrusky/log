@@ -347,7 +347,8 @@ USB devices identify themselves to the host by providing a set of binary structu
 You can use this module like this:
 
 * Trigger enable() by a user gesture (for example click or touch)
-* This will open
+* This will open a window which asks you to pair the Arduino with your browser
+  ![Pair Arduino with Chrome](images/webusb_arduino_pair.png)
 * Choose your Arduino (filtered)
 * send() your universe to it
 * When you are done you can disconnect() (the device will still be paired, it's just the connection that is destroyed)
