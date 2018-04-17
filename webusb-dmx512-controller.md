@@ -12,8 +12,6 @@ TK Do more references and ToC
 
 If you already know what DMX512 is and you just want to build your device, jump to
 
-TK Need super good pictures of lights and controller: Ask a photographer
-
 
 ## DMX512
 
@@ -30,12 +28,12 @@ TK: newyears_eve_2017.jpg
 
 ### How does it work?
 
-DMX512 combines a set of lights (called fixtures) into a [bus network](https://en.wikipedia.org/wiki/Bus_network) of fixtures (called Universe). Each fixture has one ore more functionalities, such as
+DMX512 combines a set of lights (called fixtures) into a [bus network](https://en.wikipedia.org/wiki/Bus_network) of fixtures (called Universe). Each fixture has one or more functionalities, such as
 
 * RGB (Red, Green, Blue) color
 * Dimmer
 * UV
-* Move the fixture horizontally or vertically
+* Movement (horizontally or vertically)
 * Blinking effect
 * Generate fog
 * Blow bubbles
@@ -44,7 +42,7 @@ Each functionality can be controlled by one or more channels. This means that ea
 
 Each channel can be filled with a value between 0 and 255. In most situations it has the following meaning:
 
-* `0 = 0%: no intensity, zero speed, no blinking position`
+* `0 = 0%: no intensity, zero speed, no blinking`
 * `255 = 100%: full color, full speed, fast blinking`
 
 Every fixture comes with a manual that holds all the informations you need to use the it. It includes a list all predefined channel sets + the meaning of the channel values and general information about the fixture.
@@ -166,6 +164,10 @@ TK Image dmx512_universe_webusb_controller.png
 
 The next thing we need is a WebUSB DMX512 controller to send the data (= an Array of 512 values) into the universe.
 
+TK Separator
+
+---
+
 
 ## Arduino
 
@@ -202,147 +204,188 @@ TK webusb_dmx512_controller_explained.jpg
 
 **Attention**: As of writing this article there is no DMX512 shield for the small Arduino boards (like the Arduino Micro). This means that in order to use this shield you have to at least get an Arduino Leonardo or similar in terms of the size, because the position of the headers must be the same.
 
-A list of Arduino(-ish) boards that can be used in combination with the shield:
+A list of boards that can be used in combination with the shield:
 
 * Arduino Leonardo / Arduino Leonardo ETH
 * Seeeduino Lite
 
-
-TK Separator
-
 The hardware is ready, so let's jump into the software.
 
+
+TK Separator
+---
 
 
 ### Setup
 
 In order to be able to upload the code to the Arduino you have to setup the following stuff:
 
-1. Checkout the [WebUSB DMX512 Controller Repository](https://github.com/NERDDISCO/WebUSB-DMX512-Controller)
+1. Checkout the [NERDDISCO/webusb-dmx512-controller](https://github.com/NERDDISCO/webusb-dmx512-controller) repository to your computer
   ```bash
-  git clone git@github.com:NERDDISCO/WebUSB-DMX512-Controller.git
+  git clone git@github.com:NERDDISCO/webusb-dmx512-controller.git
   ```
 2. Install [npm](https://www.npmjs.com) dependencies
   ```bash
   # go into directory of repository
-  cd WebUSB-DMX512-Controller
+  cd webusb-dmx512-controller
 
   # install dependencies
   npm install
   ```
 3. Download & install the [Arduino IDE](https://www.arduino.cc/en/Main/Software#download) >= 1.8.5, so you are able to write & push code onto the Arduino
 4. Open the Arduino IDE
-5. Open the preferences: *Arduino / Preferences*
+5. Open the preferences: *Arduino > Preferences*
 6. In the preferences dialog you have to change the *Sketchbook location* so that it points to the *sketchbook* folder that comes with the repository:
 
   ![Arduino IDE: Change sketchbook location](images/arduino_ide_preferences_sketchbook_location.png)
 7. Close the Arduino IDE and then open it again (this is needed to load the new sketchbook that we selected in the step before)
 8. Now we need to configure the Arduino IDE so that it can recognize our Arduino Leonardo:
-   1. Select the model: *Tools / Board / Arduino Leonardo (WebUSB)*
-   2. Select the USB port: *Tools / Port / /dev/tty.usbmodemWUAR1* (This should be something with *usb* in the name and can be different on your computer.
+   1. Select the model: *Tools > Board > Arduino Leonardo (WebUSB)*
+   2. Select the USB port: *Tools > Port > /dev/tty.usbmodem* (This should be something with *usb* in the name and can be different on your computer)
 
     **Attention**: This can only be selected if your Arduino is actually attached to your computer!
-9. Open the sketch (if it's not already open): *File / Sketchbook / webusb_dmx512_controller*
-
-If all the steps are done, you should now be able to verify the sketch by pushing the *verify* button (check mark icon) in the top left of the sketch:
-
-![Arduino IDE: Verify Sketch](images/arduino_ide_verify_sketch.png)
-
-Which will produce an output like this:
-
-```bash
-Sketch uses 8258 bytes (28%) of program storage space. Maximum is 28672 bytes.
-Global variables use 888 bytes (34%) of dynamic memory, leaving 1672 bytes for local variables. Maximum is 2560 bytes.
+9. Open the sketch (if it's not already open): *File > Sketchbook > webusb_dmx512_controller*
+10. Verify that the sketch is working: *Sketch > Verify/Compile*. This will produce an output like this:
+  ```bash
+  Sketch uses 8258 bytes (28%) of program storage space. Maximum is 28672 bytes.
+  Global variables use 888 bytes (34%) of dynamic memory, leaving 1672 bytes for local variables. Maximum is 2560 bytes.
 ```
+11. Upload the sketch to the Arduino: *Sketch > Upload* This will produce a similar output as step 10.
 
-The C-like code than runs on the Arduino is very simple, because we can use two awesome libraries:
+**Attention**: If the steps 10 or 11 did not work as promised, [please open an issue on GitHub in my repository](https://github.com/NERDDISCO/webusb-dmx512-controller/issues)
 
-* [WebUSB](https://github.com/webusb/arduino)
-* [Conceptinetics](sketchbook/libraries/Conceptinetics)
+When you are done your Arduino IDE should look like this:
 
-These are already part of the sketchbook that came with the repository.
+![Arduino IDE: Full verified sketch](images/arduino_ide_sketch_verified.png)
 
-Let's take a look at the code:
 
-### WebUSB DMX512 Controller Sketch
+### Arduino Sketch
+
+The applications that you upload on the Arduino are called sketch. They contain all the code and external libraries that are needed in order to control what the Arduino should do for you.
+
+You can "split" the sketch itself into three different parts, so let's see what is happening in each of them.
+
+#### 1. Imports & definitions & global variables
 
 ```arduino
+// (a)
 #include <WebUSB.h>
 #include <Conceptinetics.h>
 
-// Whitelisted URLs
-WebUSB WebUSBSerial(1, "nerddisco.github.io/WebUSB-DMX512-Controller");
+// (b) URL whitelisting
+WebUSB WebUSBSerial(1, "nerddisco.github.io/webusb-dmx512-controller");
+// (c)
 #define Serial WebUSBSerial
 
-// Amount of channels in the universe
+// (d) Amount of channels in the universe
 #define universe 512
 
-// dmx_master(channels , pin);
+// (e) dmx_master(channels , pin);
 // channels: Amount of channels in the universe
 // pin: Pin to do read / write operations on the DMX shield
 DMX_Master dmx_master(universe, 2);
 
-// Store the incoming WebUSB bytes
+// (f) Store the incoming WebUSB bytes
 byte incoming[universe];
+```
 
-// Run once on startup
+**(a)** Import the external libraries that are needed:
+
+* [WebUSB](https://github.com/webusb/arduino) to handle the WebUSB connection
+* [Conceptinetics](https://sourceforge.net/projects/dmxlibraryforar/) to handle the DMX512 shield (which is maintained by the same person that is selling the shield)
+
+Those two libraries are already part of the [sketchbook](https://github.com/NERDDISCO/webusb-dmx512-controller/tree/master/sketchbook) that came with the repository.
+
+**(b)** For security reasons the WebUSB device has to whitelist the URLs that are allowed to use the device in the browser. In this case it points to my demo page
+
+**(c)** Use `Serial` instead of `WebUSBSerial`
+
+**(d)** Set the amount of channels in the universe to 512
+
+**(e)** Initialize the dmx_master which is used to send data to the DMX512 shield
+
+**(f)** Create an array of bytes that has the size of 512 to save the data that is coming over WebUSB to the Arduino
+
+#### 2. setup()
+
+```arduino
+// (a) Run once on startup
 void setup() {
-  // Initialize incoming with 0
+  // (b) Initialize incoming with 0
   memset(incoming, 0, sizeof(incoming));
 
-  // Wait until WebUSB connection is established
+  // (c) Wait until WebUSB connection is established
   while (!Serial) {
     ;
   }
 
-  // Start transmission to DMXShield
+  // (d) Start transmission to DMX-Shield
   dmx_master.enable();
 }
+```
 
-// Run over and over again
+**(a)** Every time the Arduino is started (for example when you connect it over USB to your computer), the `setup()` function is triggered once. It can be used to initialize everything.
+
+**(b)** Fill the `incoming` array of bytes with 0, so that every channel in the universe has a default value. This is needed to put the universe in a clean state.
+
+**(c)** Wait until the WebUB connection in the browser was successfully established with the Arduino
+
+**(d)** When *(c)* is fulfilled, start the communication with the DMX512 shield
+
+
+#### 3. loop()
+
+```arduino
+// (a) Run over and over again
 void loop() {
-  // WebUSB is available
+  // (b) WebUSB is available
   if (Serial.available() > 0) {
 
-    // Read 512 incoming bytes
+    // (c) Read 512 incoming bytes
     Serial.readBytes(incoming, universe);
 
-    // Iterate over all universe
+    // (d) Iterate over all universe
     for (int i = 0; i < universe; i++) {
-      // Set the value for each channel
+      // (e) Set the value for each channel
       dmx_master.setChannelValue(i + 1, incoming[i]);
     }
   }
 }
 ```
 
-### Test the device
+**(a)** The main logic of the code is happening in loop, because this function is called over and over again (and not only once as `setup()` does)
 
-We are done with setting up the actual WebUSB device. If you want to test everything you can open the [demo page](https://nerddisco.github.io/WebUSB-DMX512-Controller). This will open a development console to test the WebUSB DMX512 Controller.
+**(b)** When the WebUSB connection in the browser was successfully established with the Arduino
+
+**(c)** Read 512 bytes that are send via WebUSB to the Arduino and save them into `incoming`
+
+**(d)** Iterate over all 512 values
+
+**(e)** Set the value of each channel of the universe according to the data that was received over WebUSB. First channel is 1. 
+
+
+TK Separator
+
+---
 
 
 ## WebUSB
 
-We will use WebUSB to send data directly from the browser via USB to the Arduino to control the DMX512 universe.
+[Wikipedia defines USB](https://en.wikipedia.org/wiki/USB) like this:
 
-There are only just two thinks you have to take care when dealing with WebUSB:
+> USB, short for Universal Serial Bus, is an industry standard that was developed to define cables, connectors and protocols for connection, communication, and power supply between personal computers and their peripheral devices.
 
-1. You can run in it on localhost or via https online.
-2. You need a device that can handle URL whitelisting, meaning that the device has to allow on which URLs it can be used.
+This is cool, because USB gives us the power to use devices regardless of the OS. Well, that is not entirely true, because only devices with standard functionality (= implemented across operating systems) can be used "everywhere". More complex devices always need some kind of OS-specific driver or SDK from the hardware manufacturer. This makes it super hard for developers to actually use these USB devices in the web.
 
-But before we can jump into the code you have to understand what USB descriptors are, because otherwise the code will make no sense.
+WebUSB is here to overcome this limitation, as it's provides a safe way to expose USB devices in the browser. That's why the standard defines different kind of protections:
 
-### USB Descriptors
-
-TK usb_descriptors.png
-![USB Descriptors](images/usb_descriptors.png)
-
-https://wicg.github.io/webusb/#appendix-descriptors
-
-USB devices identify themselves to the host by providing a set of binary structures known as descriptors. The first one read by the host is the device descriptor which contains basic information such as the vendor and product IDs assigned by the USB-IF and the manufacturer.
+1. You can use it locally on localhost for testing
+2. You can use it online only secured via https
+2. You need a device that can handle URL whitelisting, meaning that the device has to allow on which URLs it can be used (which we already saw when creating the Arduino Sketch)
+3. The user has to allow using the USB device by triggering an explicit gesture (for example a click)
 
 
-### WebUsbDmx512Controller.js
+### webusb-dmx-controller/controller.js
 
 You can use this module like this:
 
@@ -355,103 +398,24 @@ You can use this module like this:
 
 Let's jump into the code to see all of this happening:
 
-```javascript
-export default class WebUsbDmx512Controller {
-  constructor(args) {
-    this.device = null
-  }
 
-  /*
-   * Enable WebUSB, which has to be triggered by a user gesture
-   * When the device was selected, try to create a connection to the device
-   */
-  enable() {
-    // Only request the port for specific devices
-    const filters = [
-      // Arduino LLC (10755), Leonardo ETH (32832)
-      { vendorId: 0x2a03, productId: 0x8040 }
-    ]
 
-    // Request access to the USB device
-    navigator.usb.requestDevice({ filters })
-      // Open session to selected USB device
-      .then(selectedDevice => {
-        this.device = selectedDevice
 
-        // Open connection
-        return this.device.open()
-      })
 
-      // Select #1 configuration if not automatially set by OS
-      .then(() => {
-        if (this.device.configuration === null) {
-          return this.device.selectConfiguration(1)
-        }
-      })
 
-      // Get exclusive access to the #2 interface
-      .then(() => this.device.claimInterface(2))
+### Browser
 
-      // Tell the USB device that we are ready to send data
-      .then(() => this.device.controlTransferOut({
-          // It's a USB class request
-          'requestType': 'class',
-          // The destination of this request is the interface
-          'recipient': 'interface',
-          // CDC: Communication Device Class
-          // 0x22: SET_CONTROL_LINE_STATE
-          // RS-232 signal used to tell the USB device that the computer is now present.
-          'request': 0x22,
-          // Yes
-          'value': 0x01,
-          // Interface #2
-          'index': 0x02
-        })
-      )
+1. Download and install [Google Chrome](https://www.google.com/chrome/) >= 63 (because it's the only browser with native WebUSB support)
+2. [Open the demo page](https://nerddisco.github.io/webusb-dmx512-controller) and start interacting with the WebUSB DMX512 Controller
 
-      .catch(error => console.log(error))
-  }
 
-  /*
-   * Send data to the USB device
-   */
-  send(data) {
-    // Create array with 512 x 0 and then concat with the data
-    const universe = data.concat(new Array(512).fill(0).slice(data.length, 512))
 
-    // Create an ArrayBuffer, because that is needed for WebUSB
-    const buffer = Uint8Array.from(universe)
 
-    // Send data on Endpoint #4
-    return this.device.transferOut(4, buffer)
-  }
 
-  /*
-   * Disconnect from the USB device
-   */
-  disconnect() {
-    // Declare that we don't want to receive data anymore
-    return this.device.controlTransferOut({
-        // It's a USB class request
-        'requestType': 'class',
-        // The destination of this request is the interface
-        'recipient': 'interface',
-        // CDC: Communication Device Class
-        // 0x22: SET_CONTROL_LINE_STATE
-        // RS-232 signal used to tell the USB device that the computer is now present.
-        'request': 0x22,
-        // No
-        'value': 0x01,
-        // Interface #2
-        'index': 0x02
-      })
-    )
 
-    // Close the connection to the USB device
-    .then(() => this.device.close())
-  }
-}
-```
+### Test the device
+
+We are done with setting up the actual WebUSB device. If you want to test everything you can open the [demo page](https://nerddisco.github.io/webusb-dmx512-controller). This will open a development console to test the WebUSB DMX512 Controller.
 
 
 
