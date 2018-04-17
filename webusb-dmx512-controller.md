@@ -213,6 +213,7 @@ The hardware is ready, so let's jump into the software.
 
 
 TK Separator
+
 ---
 
 
@@ -346,6 +347,7 @@ void loop() {
 
     // (d) Iterate over all universe
     for (int i = 0; i < universe; i++) {
+
       // (e) Set the value for each channel
       dmx_master.setChannelValue(i + 1, incoming[i]);
     }
@@ -361,7 +363,7 @@ void loop() {
 
 **(d)** Iterate over all 512 values
 
-**(e)** Set the value of each channel of the universe according to the data that was received over WebUSB. First channel is 1. 
+**(e)** Set the value of each channel of the universe according to the data that was received over WebUSB. First channel is 1.
 
 
 TK Separator
@@ -375,47 +377,124 @@ TK Separator
 
 > USB, short for Universal Serial Bus, is an industry standard that was developed to define cables, connectors and protocols for connection, communication, and power supply between personal computers and their peripheral devices.
 
-This is cool, because USB gives us the power to use devices regardless of the OS. Well, that is not entirely true, because only devices with standard functionality (= implemented across operating systems) can be used "everywhere". More complex devices always need some kind of OS-specific driver or SDK from the hardware manufacturer. This makes it super hard for developers to actually use these USB devices in the web.
+USB gives us the power to use devices regardless of the OS. Well, that is not entirely true, because only devices with standard functionality (= keyboard, mice, audio, video and storage devices) can be used everywhere. Non-standard devices always need some kind of OS-specific driver or SDK from the hardware manufacturer. This makes it super hard for developers to actually use these USB devices on the web.
 
-WebUSB is here to overcome this limitation, as it's provides a safe way to expose USB devices in the browser. That's why the standard defines different kind of protections:
+WebUSB is here to overcome this problem, as it provides a safe way to expose non-standard USB devices in the browser. But what does safe even mean? The WebUSB standard defines different kind of protections:
 
 1. You can use it locally on localhost for testing
 2. You can use it online only secured via https
-2. You need a device that can handle URL whitelisting, meaning that the device has to allow on which URLs it can be used (which we already saw when creating the Arduino Sketch)
+2. You need a device that can handle URL whitelisting, meaning that the device has to allow on which URLs it can be used (which we already saw in the Arduino Sketch)
 3. The user has to allow using the USB device by triggering an explicit gesture (for example a click)
 
+As of right now you can use WebUSB in Google Chrome 63 (native support) and as a [port in Node.js](https://github.com/thegecko/webusb). This might change in the future, so [let's keep track on the implementation status](https://github.com/WICG/webusb#implementation-status).
 
-### webusb-dmx-controller/controller.js
+### Using the DMX512 controller
 
-You can use this module like this:
+At this point you already have the hardware ready, but to actually make use of it in the browser I created a module. It is part of the [NERDDISCO/webusb-dmx512-controller](https://github.com/NERDDISCO/webusb-dmx512-controller) repository and you can find it in [controller.js](https://github.com/NERDDISCO/webusb-dmx512-controller/blob/master/controller.js). The module itself is also [published on npm](https://www.npmjs.com/package/webusb-dmx512-controller), so you can install it into your project: `npm install webusb-dmx512-controller`
 
-* Trigger enable() by a user gesture (for example click or touch)
-* This will open a window which asks you to pair the Arduino with your browser
-  ![Pair Arduino with Chrome](images/webusb_arduino_pair.png)
-* Choose your Arduino (filtered)
-* send() your universe to it
-* When you are done you can disconnect() (the device will still be paired, it's just the connection that is destroyed)
+I will not got into detail what is happening in the code (this might be another article if you want to know more about WebUSB), but focus on how to use the module.
 
-Let's jump into the code to see all of this happening:
+### Create connection to Arduino
+
+```javascript
+// (a) Import the module
+import Controller from 'webusb-dmx512-controller/controller.js'
+
+// (b) Create an instance
+const controller = new Controller()
+
+// (c) Get a reference to the button
+const activateButton = document.getElementById('activateWebUsb')
+
+// (d) Listen for click events on the button
+activateButton.addEventListener('click', e => {
+
+  // (e) Enable WebUSB and select the Arduino
+  controller.enable().then(() => {
+
+    // (f) Create a connection to the selected Arduino
+    controller.connect()
+  })
+
+})
+```
+
+**(a)** Import the ES6 module
+
+**(b)** Create an instance of the module
+
+**(c)** Get a reference to the button (or any other element the user can interact with)
+
+**(d)** Listen for click events on the button (which have to be triggered by the user)
+
+**(e)** This will enable WebUSB and open a dialog for the user in which they can select the Arduino. The dialog looks like this (Chrome on macOS):
+![Pair Arduino with Chrome](images/webusb_arduino_pair.png)
+
+**(f)** We can create a connection to the Arduino when *(e)* was successful
 
 
+### Update the DMX512 universe
+
+Now that we have a connection to the Arduino from the browser, we can update the universe by using a single function:
+
+```
+controller.updateUniverse(channel, value)
+```
+
+* The first parameter is the `channel` and expects a `number`
+* The second parameter is the `value` and expects either a `number` or an `array` of numbers
+
+The function itself has two "modes":
+
+1. *Single* Update one `channel`. This happens when the `value` is a `number`
+2. *Multiple* Update multiple channels starting at `channel`. This happens when `value` is an `array`
+
+Before we start to use the function, let's recapture what we have in our DMX512 universe:
+
+**(I)** Flat PAR with 6 channels at address 1
+**(II)** Flat PAR with 6 channels at address 7
+**(III)** Smoke machine with 1 channel at address 13
+
+Let's assume we want to set the *Color* (= channels 1, 2 & 3) to red for **(I)**:
+
+```javascript
+// Set each channel separately (mode = single)
+controller.updateUniverse(1, 255)
+controller.updateUniverse(2, 0)
+controller.updateUniverse(3, 0)
+
+// Or set all 3 channels at once (mode = multiple)
+controller.updateUniverse(1, [255, 0, 0])
+```
+
+Yaaaay, our **(I)** is now in red. Or isn't it? Well no, setting the *Color* alone is not enough. You also have to set the *Dimmer* on channel 5, because that controls how bright the LEDs are. Initially all channels are set to 0, which means that the brightness is "off".
+
+```javascript
+// Set the dimmer to it's maximum
+controller.updateUniverse(5, 255)
+```
+
+Now your fixture is shining in bright red.
+
+TK picture of fixture
+
+## Live Demo
+
+In order to test your WebUSB DMX512 Controller directly in the browser, I have [created a demo](https://nerddisco.github.io/webusb-dmx512-controller) that is using my module and provides a very basic UI:
 
 
+TK picture of demo with explanations
+
+TODO: Add explanation list
+* console
+* activate
+* disconnect
+* change color
 
 
-### Browser
-
-1. Download and install [Google Chrome](https://www.google.com/chrome/) >= 63 (because it's the only browser with native WebUSB support)
-2. [Open the demo page](https://nerddisco.github.io/webusb-dmx512-controller) and start interacting with the WebUSB DMX512 Controller
+TODO: Update demo to also give a "free" mode to set the value of the channel to whatever the person wants -> Add a "free" component
 
 
-
-
-
-
-### Test the device
-
-We are done with setting up the actual WebUSB device. If you want to test everything you can open the [demo page](https://nerddisco.github.io/webusb-dmx512-controller). This will open a development console to test the WebUSB DMX512 Controller.
 
 
 
