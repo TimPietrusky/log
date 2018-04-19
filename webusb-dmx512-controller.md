@@ -30,7 +30,7 @@ TK: newyears_eve_2017.jpg
 
 DMX512 combines a set of lights (called fixtures) into a [bus network](https://en.wikipedia.org/wiki/Bus_network) of fixtures (called Universe). Each fixture has one or more functionalities, such as
 
-* RGB (Red, Green, Blue) color
+* Color in [RGB (Red, Green, Blue)](https://en.wikipedia.org/wiki/RGB_color_model)
 * Dimmer
 * UV
 * Movement (horizontally or vertically)
@@ -383,8 +383,8 @@ WebUSB is here to overcome this problem, as it provides a safe way to expose non
 
 1. You can use it locally on localhost for testing
 2. You can use it online only secured via https
-2. You need a device that can handle URL whitelisting, meaning that the device has to allow on which URLs it can be used (which we already saw in the Arduino Sketch)
-3. The user has to allow using the USB device by triggering an explicit gesture (for example a click)
+3. You need a device that can handle URL whitelisting, meaning that the device has to allow on which URLs it can be used (which we already saw in the Arduino Sketch)
+4. The user has to allow using the USB device by triggering an explicit gesture (for example a click)
 
 As of right now you can use WebUSB in Google Chrome 63 (native support) and as a [port in Node.js](https://github.com/thegecko/webusb). This might change in the future, so [let's keep track on the implementation status](https://github.com/WICG/webusb#implementation-status).
 
@@ -392,9 +392,8 @@ As of right now you can use WebUSB in Google Chrome 63 (native support) and as a
 
 At this point you already have the hardware ready, but to actually make use of it in the browser I created a module. It is part of the [NERDDISCO/webusb-dmx512-controller](https://github.com/NERDDISCO/webusb-dmx512-controller) repository and you can find it in [controller.js](https://github.com/NERDDISCO/webusb-dmx512-controller/blob/master/controller.js). The module itself is also [published on npm](https://www.npmjs.com/package/webusb-dmx512-controller), so you can install it into your project: `npm install webusb-dmx512-controller`
 
-I will not got into detail what is happening in the code (this might be another article if you want to know more about WebUSB), but focus on how to use the module.
 
-### Create connection to Arduino
+### Create a connection to the Arduino
 
 ```javascript
 // (a) Import the module
@@ -423,7 +422,7 @@ activateButton.addEventListener('click', e => {
 
 **(b)** Create an instance of the module
 
-**(c)** Get a reference to the button (or any other element the user can interact with)
+**(c)** Get a reference to the button (or any other element the user can interact with to trigger the user gesture required by WebUSB protection mentioned earlier)
 
 **(d)** Listen for click events on the button (which have to be triggered by the user)
 
@@ -437,7 +436,7 @@ activateButton.addEventListener('click', e => {
 
 Now that we have a connection to the Arduino from the browser, we can update the universe by using a single function:
 
-```
+```javascript
 controller.updateUniverse(channel, value)
 ```
 
@@ -446,13 +445,15 @@ controller.updateUniverse(channel, value)
 
 The function itself has two "modes":
 
-1. *Single* Update one `channel`. This happens when the `value` is a `number`
-2. *Multiple* Update multiple channels starting at `channel`. This happens when `value` is an `array`
+1. *Single* = Update one `channel`. This happens when the `value` is a `number`
+2. *Multiple* = Update multiple channels starting at `channel`. This happens when `value` is an `array`
 
 Before we start to use the function, let's recapture what we have in our DMX512 universe:
 
 **(I)** Flat PAR with 6 channels at address 1
+
 **(II)** Flat PAR with 6 channels at address 7
+
 **(III)** Smoke machine with 1 channel at address 13
 
 Let's assume we want to set the *Color* (= channels 1, 2 & 3) to red for **(I)**:
@@ -467,36 +468,77 @@ controller.updateUniverse(3, 0)
 controller.updateUniverse(1, [255, 0, 0])
 ```
 
-Yaaaay, our **(I)** is now in red. Or isn't it? Well no, setting the *Color* alone is not enough. You also have to set the *Dimmer* on channel 5, because that controls how bright the LEDs are. Initially all channels are set to 0, which means that the brightness is "off".
+Yaaaay, our **(I)** is now in red. Or isn't it? Well no, setting the *Color* alone is not enough. You also have to set the *Dimmer* on channel 5, because that controls how bright the LEDs are. Initially all channels are set to 0, which means that the brightness is "turned off". So let's set the *Dimmer* to 255:
 
 ```javascript
 // Set the dimmer to it's maximum
 controller.updateUniverse(5, 255)
 ```
 
-Now your fixture is shining in bright red.
+Now the fixture **(I)** is shining in bright red.
 
-TK picture of fixture
+TK flat_par_color_red_dimmer_255.jpg
+
+![Flat PAR shining in bright red](images/flat_par_color_red_dimmer_255.jpg)
+
+Let's also set the color of fixture **(II)** (address: 7) to yellow and use a slow strobe (= blinking at low frequency):
+
+```javascript
+// Set color of fixture II to yellow
+controller.updateUniverse(7, [255, 255, 0])
+
+// Set dimmer of fixture II to half brightness
+controller.updateUniverse(11, 127)
+
+// Use a slow strobe for fixture II
+controller.updateUniverse(12, 8)
+```
+
+To improve the lighting effect of the other two fixtures, we also activate the smoke of fixture **(III)** (address 13):
+
+```javascript
+// Activate smoke of fixture III
+controller.updateUniverse(13, 255)
+```
+
+
+
+### How does updateUniverse() work?
+
+Every time you use the `updateUniverse()` function, the `controller.universe` array gets updated with the specified value(s), converted to an [Uint8Array](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array) and finally send to the Arduino. The array itself looks like this (after we called it several times above):
+
+
+```javascript
+console.log(controller.universe)
+
+[255, 0, 0, 0, 255, 0, 255, 255, 0, 0, 125, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+```
+
+
+
+
+TK separator
+
+---
 
 ## Live Demo
 
-In order to test your WebUSB DMX512 Controller directly in the browser, I have [created a demo](https://nerddisco.github.io/webusb-dmx512-controller) that is using my module and provides a very basic UI:
+In order to test the WebUSB DMX512 Controller directly in the browser, I have [created a demo](https://nerddisco.github.io/webusb-dmx512-controller) that is using the [webusb-dmx512-controller](https://www.npmjs.com/package/webusb-dmx512-controller) module and wraps it in a basic UI:
+
+1. Activate WebUSB (& select the Arduino)
+2. Disconnect from the Arduino
+3. Set the value (0 - 255) of any channel (1 - 512) in the universe
+4. Use the example fixture (Flat PAR with 6 channels) from above and set the Color in RGB, UV, Dimmer and Strobe
+5. Console to show what is happening behind the scenes. It's also possible to print out the content of the universe when using the "log universe" checkbox
+
+TK webusb_dmx512_controller_demo_explained.jpg
+
+![WebUSB DMX512 Controller: Demo](images/webusb_dmx512_controller_demo_explained.jpg)
 
 
-TK picture of demo with explanations
+TK Separator
 
-TODO: Add explanation list
-* console
-* activate
-* disconnect
-* change color
-
-
-TODO: Update demo to also give a "free" mode to set the value of the channel to whatever the person wants -> Add a "free" component
-
-
-
-
+---
 
 
 ## What now?
