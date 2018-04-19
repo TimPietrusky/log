@@ -268,7 +268,7 @@ You can "split" the sketch itself into three different parts, so let's see what 
 
 #### 1. Imports & definitions & global variables
 
-```arduino
+```c
 // (a)
 #include <WebUSB.h>
 #include <Conceptinetics.h>
@@ -309,7 +309,7 @@ Those two libraries are already part of the [sketchbook](https://github.com/NERD
 
 #### 2. setup()
 
-```arduino
+```c
 // (a) Run once on startup
 void setup() {
   // (b) Initialize incoming with 0
@@ -336,7 +336,7 @@ void setup() {
 
 #### 3. loop()
 
-```arduino
+```c
 // (a) Run over and over again
 void loop() {
   // (b) WebUSB is available
