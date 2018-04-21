@@ -5,12 +5,14 @@ TK webusb_dmx512_controller.jpg
 
 I love to control all the lights and I always try to find new ways of doing so. Currently I'm in love with DMX512 and WebUSB.
 
-This article describes how you can build your own DMX512 controller using an Arduino and how this controller can be used directly in the browser by leveraging WebUSB.
+This article describes how you can build your own DMX512 controller by using an Arduino and how this controller can be used directly in the browser by leveraging WebUSB. It will answer the following questions:
 
+* [What is DMX512?](#dmx512)
+* [What is an Arduino?](#arduino)
+* [What is WebUSB?](#webusb)
+* [How can a WebUSB DMX512 controller be used?](#live-demo)
 
-TK Do more references and ToC
-
-If you already know what DMX512 is and you just want to build your device, jump to
+TK Link ToC
 
 
 ## DMX512
@@ -179,7 +181,7 @@ TK Separator
 
 > Arduino boards are available commercially in preassembled form, or as do-it-yourself (DIY) kits.
 
-This is the perfect foundation to create our own WebUSB DMX512 Controller, because some Arduino (like the Arduino Leonardo) have the ability to be recognized by the computer as an external USB device (for example with the ATmega32u4 chip). This makes it possible to use the Arduino over WebUSB.
+This is the perfect foundation to create our own WebUSB DMX512 Controller, because some Arduino (like the [Arduino Leonardo](https://store.arduino.cc/arduino-leonardo-with-headers) with the [ATmega32u4](http://www.microchip.com/wwwproducts/en/ATmega32U4) chip) have the ability to be recognized by the computer as an external USB device. This makes it possible to use the Arduino over WebUSB.
 
 KT arduino_leonardo_explained.jpg
 ![Arduino Leonardo](images/arduino_leonardo_explained.jpg)
@@ -242,7 +244,7 @@ In order to be able to upload the code to the Arduino you have to setup the foll
 7. Close the Arduino IDE and then open it again (this is needed to load the new sketchbook that we selected in the step before)
 8. Now we need to configure the Arduino IDE so that it can recognize our Arduino Leonardo:
    1. Select the model: *Tools > Board > Arduino Leonardo (WebUSB)*
-   2. Select the USB port: *Tools > Port > /dev/tty.usbmodem* (This should be something with *usb* in the name and can be different on your computer)
+   2. Select the USB port: *Tools > Port > /dev/tty.usbmodem* (The * is a placeholder and will be different for every Arduino you are using)
 
     **Attention**: This can only be selected if your Arduino is actually attached to your computer!
 9. Open the sketch (if it's not already open): *File > Sketchbook > webusb_dmx512_controller*
@@ -297,7 +299,7 @@ byte incoming[universe];
 
 Those two libraries are already part of the [sketchbook](https://github.com/NERDDISCO/webusb-dmx512-controller/tree/master/sketchbook) that came with the repository.
 
-**(b)** For security reasons the WebUSB device has to whitelist the URLs that are allowed to use the device in the browser. In this case it points to my demo page
+**(b)** For security reasons the WebUSB device has to whitelist the URLs that are allowed to use the device in the browser. In this case it points to my demo page. Please change this when you want to use the controller on your URL!
 
 **(c)** Use `Serial` instead of `WebUSBSerial`
 
@@ -355,7 +357,7 @@ void loop() {
 }
 ```
 
-**(a)** The main logic of the code is happening in loop, because this function is called over and over again (and not only once as `setup()` does)
+**(a)** The main logic of the code is happening in `loop()`, because this function is called over and over again (and not only once as `setup()` does)
 
 **(b)** When the WebUSB connection in the browser was successfully established with the Arduino
 
@@ -543,13 +545,28 @@ TK Separator
 
 ## What now?
 
-### luminave
-JO JO
+This was just a very basic introduction in the world of visualizations with DMX512. You want to dive even deeper? GREAT.
+
 
 ### fivetwelve
-FIVE TWELVE
+
+This project by [Martin Schuhfuss](https://twitter.com/usefulthink) provides a super nice abstraction to control DMX512 light-equipment. Everything I know and did with DMX512 is because of his library, so please go check it out: [fivetwelve on GitHub](https://github.com/beyondscreen/fivetwelve)
 
 
+### luminave
+
+If you come that far, you should already know that I LOVE LIGHTS. And because I wanted to have a browser-based software to manage everything related to DMX512 and beyond, I created luminave. You can use luminave to create a visual experiences, because it is providing different kind of integrations:
+
+* [WebUSB DMX512 Controller](https://github.com/NERDDISCO/webusb-dmx512-controller)
+* [fivetwelve](https://github.com/beyondscreen/fivetwelve) to connect with other DMX512 controllers
+* [modV 1.0](https://github.com/2xAA/modV) for creating music visualizations in the browser
+
+So what can you do? Let's watch this video of luminave in action (featuring the lights I have in my basement controlled by my friend [Olli](https://twitter.com/oltoko)):
+
+https://www.youtube.com/watch?time_continue=223&v=Qq9V5KHAf0s
+
+
+TK Separator
 
 ---
 
@@ -563,5 +580,4 @@ FIVE TWELVE
 * [Programm a smart device directly, no install needed](https://medium.com/@kennethrohde/program-a-smart-device-directly-no-install-needed-cd8b29320d76)
 * [Universal Serial Bus Class Definitions for Communication Devices](https://cscott.net/usb_dev/data/devclass/usbcdc10.pdf)
 * [USB in a nutshell](http://www.beyondlogic.org/usbnutshell/usb1.shtml)
-* [USB in a nutshell: Super good introduction to the USB standard](http://www.beyondlogic.org/usbnutshell/usb1.shtml)
 * [USB made simple](http://www.usbmadesimple.co.uk)
