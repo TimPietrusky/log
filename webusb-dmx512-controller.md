@@ -58,7 +58,7 @@ I will describe two of my favorites fixtures to get started with DMX512.
 TK Image of fog machine
 ![Fog machine](images/fog_machine.jpg)
 
-Is producing smoke to improve the visibility of the lights and the overall atmosphere.
+The purpose of the ["AF-150" by Stairville](https://www.thomann.de/gb/stairville_af_150_dmx_fog_machine.htm) is to produce smoke. This helps to improve the visibility of the lights and the overall atmosphere.
 
 ```csv
 Channel, Functionality, Description
@@ -527,15 +527,15 @@ TK separator
 
 In order to test the WebUSB DMX512 Controller directly in the browser, I have [created a demo](https://nerddisco.github.io/webusb-dmx512-controller) that is using the [webusb-dmx512-controller](https://www.npmjs.com/package/webusb-dmx512-controller) module and wraps it in a basic UI:
 
+TK webusb_dmx512_controller_demo_explained.jpg
+
+![WebUSB DMX512 Controller: Demo](images/webusb_dmx512_controller_demo_explained.jpg)
+
 1. Activate WebUSB (& select the Arduino)
 2. Disconnect from the Arduino
 3. Set the value (0 - 255) of any channel (1 - 512) in the universe
 4. Use the example fixture (Flat PAR with 6 channels) from above and set the Color in RGB, UV, Dimmer and Strobe
 5. Console to show what is happening behind the scenes. It's also possible to print out the content of the universe when using the "log universe" checkbox
-
-TK webusb_dmx512_controller_demo_explained.jpg
-
-![WebUSB DMX512 Controller: Demo](images/webusb_dmx512_controller_demo_explained.jpg)
 
 
 TK Separator
@@ -555,15 +555,28 @@ This project by [Martin Schuhfuss](https://twitter.com/usefulthink) provides a s
 
 ### luminave
 
-If you come that far, you should already know that I LOVE LIGHTS. And because I wanted to have a browser-based software to manage everything related to DMX512 and beyond, I created luminave. You can use luminave to create a visual experiences, because it is providing different kind of integrations:
+If you come that far, you should already know that I LOVE LIGHTS. And because I wanted to have a browser-based software to manage everything related to DMX512 and beyond, I created [luminave](https://github.com/NERDDISCO/luminave). You can use [luminave](https://github.com/NERDDISCO/luminave) to create a visual experiences, because it is providing different kind of integrations:
 
 * [WebUSB DMX512 Controller](https://github.com/NERDDISCO/webusb-dmx512-controller)
 * [fivetwelve](https://github.com/beyondscreen/fivetwelve) to connect with other DMX512 controllers
 * [modV 1.0](https://github.com/2xAA/modV) for creating music visualizations in the browser
 
-So what can you do? Let's watch this video of luminave in action (featuring the lights I have in my basement controlled by my friend [Olli](https://twitter.com/oltoko)):
+So what can you do? Let's watch this video of [luminave](https://github.com/NERDDISCO/luminave) in action:
+
+**Attention**: The video contains flashing lights & music!
 
 https://www.youtube.com/watch?time_continue=223&v=Qq9V5KHAf0s
+
+The fixtures in the video are part of the installation I have in my basement:
+
+* 1 x ["Starburst" by ADJ](http://www.adj.com/starburst)
+* 4 x ["SePar Quad LED RGBUV IR" by Fun Generation](https://www.thomann.de/gb/fun_generation_separ_quad_led_rgb_uv_ir.htm)
+* 1 x ["PixBar 600 PRO" by Cameo](https://www.cameolight.com/en/products/led-bars/pixbar-600-pro-professional-12-x-12-w-rgbwa-uv-led-bar)
+* 1 x ["TMH-8" by Eurolite](https://www.thomann.de/gb/eurolite_led_tmh_8_moving_head_spot.htm)
+* 1 x ["Wookie 200 RGY" by Cameo](https://www.cameolight.com/en/products/lasers/wookie-200-rgy-animation-laser-200mw-rgy/)
+* 1 x ["Bowl Beam 604 LED COB" by Stairville](https://www.manualslib.com/manual/1303892/Thomann-Stairville-Bowl-Beam-604-Led-Cob.html) (discontinued)
+* 1 x ["AF-150" by Stairville](https://www.thomann.de/gb/stairville_af_150_dmx_fog_machine.htm)
+
 
 
 TK Separator
