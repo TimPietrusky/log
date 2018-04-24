@@ -181,7 +181,7 @@ TK Separator
 
 > Arduino boards are available commercially in preassembled form, or as do-it-yourself (DIY) kits.
 
-This is the perfect foundation to create our own WebUSB DMX512 Controller, because some Arduino (like the [Arduino Leonardo](https://store.arduino.cc/arduino-leonardo-with-headers) with the [ATmega32u4](http://www.microchip.com/wwwproducts/en/ATmega32U4) chip) have the ability to be recognized by the computer as an external USB device. This makes it possible to use the Arduino over WebUSB.
+This is the perfect foundation to create our own WebUSB DMX512 Controller, because some Arduino (like the [Arduino Leonardo](https://store.arduino.cc/arduino-leonardo-with-headers) with the [ATmega32U4](http://www.microchip.com/wwwproducts/en/ATmega32U4) chip) have the ability to be recognized by the computer as an external USB device. This makes it possible to use the Arduino over WebUSB.
 
 KT arduino_leonardo_explained.jpg
 ![Arduino Leonardo](images/arduino_leonardo_explained.jpg)
@@ -198,18 +198,19 @@ on tindie](https://www.tindie.com/products/Conceptinetics/25kv-isolated-dmx-512-
 
 Let's put it on top of the Arduino:
 
-1. The DMX512 shield, with two DMX connectors (I and II). I is the output to send data into the universe. II is empty.
-2. The Arduino Leonardo, connected over MicroUSB to the computer.
-
 TK webusb_dmx512_controller_explained.jpg
 ![Arduino with DMX512 shield attached](images/webusb_dxm512_controller_explained.jpg)
+
+1. The DMX512 shield, with two DMX connectors (I and II). I is the output to send data into the universe. II is empty.
+2. The Arduino Leonardo, connected over MicroUSB to the computer.
 
 **Attention**: As of writing this article there is no DMX512 shield for the small Arduino boards (like the Arduino Micro). This means that in order to use this shield you have to at least get an Arduino Leonardo or similar in terms of the size, because the position of the headers must be the same.
 
 A list of boards that can be used in combination with the shield:
 
-* Arduino Leonardo / Arduino Leonardo ETH
-* Seeeduino Lite
+* [Arduino Leonardo](https://store.arduino.cc/arduino-leonardo-with-headers)
+* [Arduino Leonardo ETH](https://store.arduino.cc/usa/arduino-leonardo-eth)
+* [Seeeduino Lite](http://wiki.seeedstudio.com/Seeeduino_Lite/)
 
 The hardware is ready, so let's jump into the software.
 
@@ -243,8 +244,9 @@ In order to be able to upload the code to the Arduino you have to setup the foll
   ![Arduino IDE: Change sketchbook location](images/arduino_ide_preferences_sketchbook_location.png)
 7. Close the Arduino IDE and then open it again (this is needed to load the new sketchbook that we selected in the step before)
 8. Now we need to configure the Arduino IDE so that it can recognize our Arduino Leonardo:
-   1. Select the model: *Tools > Board > Arduino Leonardo (WebUSB)*
-   2. Select the USB port: *Tools > Port > /dev/tty.usbmodem* (The * is a placeholder and will be different for every Arduino you are using)
+   1. Select the model: *Tools > Board > Arduino Leonardo (WebUSB)* (or one of the other supported boards underneath the *NERDDISCO: WebUSB DMX512 Controller* headline in the menu)
+     ![Arduino IDE: Select the Board](images/arduino_ide_select_board.png)
+   2. Select the USB port: *Tools > Port > /dev/tty.usbmodem$* (The $ is a placeholder and will be different for every Arduino you are using)
 
     **Attention**: This can only be selected if your Arduino is actually attached to your computer!
 9. Open the sketch (if it's not already open): *File > Sketchbook > webusb_dmx512_controller*
@@ -297,7 +299,7 @@ byte incoming[universe];
 * [WebUSB](https://github.com/webusb/arduino) to handle the WebUSB connection
 * [Conceptinetics](https://sourceforge.net/projects/dmxlibraryforar/) to handle the DMX512 shield (which is maintained by the same person that is selling the shield)
 
-Those two libraries are already part of the [sketchbook](https://github.com/NERDDISCO/webusb-dmx512-controller/tree/master/sketchbook) that came with the repository.
+👉 Those two libraries are already part of the [sketchbook](https://github.com/NERDDISCO/webusb-dmx512-controller/tree/master/sketchbook) that came with the repository.
 
 **(b)** For security reasons the WebUSB device has to whitelist the URLs that are allowed to use the device in the browser. In this case it points to my demo page. Please change this when you want to use the controller on your URL!
 
@@ -496,7 +498,7 @@ controller.updateUniverse(11, 127)
 controller.updateUniverse(12, 8)
 ```
 
-To improve the lighting effect of the other two fixtures, we also activate the smoke of fixture **(III)** (address 13):
+To improve the lighting effect of the two lights, we also activate the smoke of fixture **(III)** (address 13):
 
 ```javascript
 // Activate smoke of fixture III
@@ -516,7 +518,7 @@ console.log(controller.universe)
 [255, 0, 0, 0, 255, 0, 255, 255, 0, 0, 125, 0, 255, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 ```
 
-
+You can find the full [API documentation](https://github.com/NERDDISCO/webusb-dmx512-controller/blob/HEAD/docs/API.md) on GitHub.
 
 
 TK separator
@@ -555,7 +557,7 @@ This project by [Martin Schuhfuss](https://twitter.com/usefulthink) provides a s
 
 ### luminave
 
-If you come that far, you should already know that I LOVE LIGHTS. And because I wanted to have a browser-based software to manage everything related to DMX512 and beyond, I created [luminave](https://github.com/NERDDISCO/luminave). You can use [luminave](https://github.com/NERDDISCO/luminave) to create a visual experiences, because it is providing different kind of integrations:
+If you come that far, you should already know that I LOVE LIGHTS. And because I wanted to have a browser-based software to manage everything related to DMX512 and beyond, I created [luminave](https://github.com/NERDDISCO/luminave). You can use [luminave](https://github.com/NERDDISCO/luminave) to create visual experiences, because it is providing different kind of integrations to other soft- and hardware:
 
 * [WebUSB DMX512 Controller](https://github.com/NERDDISCO/webusb-dmx512-controller)
 * [fivetwelve](https://github.com/beyondscreen/fivetwelve) to connect with other DMX512 controllers
@@ -587,7 +589,7 @@ TK Separator
 
 * [WebUSB Spec](https://wicg.github.io/webusb/)
 * [Access USB devices on the Web](https://developers.google.com/web/updates/2016/03/access-usb-devices-on-the-web)
-* [WebUSB demos running on Arduino](https://github.com/webusb/arduino)
+* [WebUSB library for Arduino & demos](https://github.com/webusb/arduino)
 * [WebUSB <3 Arduino](http://slides.com/andreastagi/webusbarduino)
 * [Web enabling legacy devices](https://medium.com/@larsgk/web-enabling-legacy-devices-dc3ecb9400ed)
 * [Programm a smart device directly, no install needed](https://medium.com/@kennethrohde/program-a-smart-device-directly-no-install-needed-cd8b29320d76)
