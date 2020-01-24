@@ -225,17 +225,17 @@ TK Separator
 In order to be able to upload the code to the Arduino you have to setup the following stuff:
 
 1. Checkout the [NERDDISCO/webusb-dmx512-controller](https://github.com/NERDDISCO/webusb-dmx512-controller) repository to your computer
-  ```bash
+```sh
   git clone git@github.com:NERDDISCO/webusb-dmx512-controller.git
-  ```
+```
 2. Install [npm](https://www.npmjs.com) dependencies
-  ```bash
-  # go into directory of repository
-  cd webusb-dmx512-controller
+```sh
+# go into directory of repository
+cd webusb-dmx512-controller
 
-  # install dependencies
-  npm install
-  ```
+# install dependencies
+npm install
+```
 3. Download & install the [Arduino IDE](https://www.arduino.cc/en/Main/Software#download) >= 1.8.5, so you are able to write & push code onto the Arduino
 4. Open the Arduino IDE
 5. Open the preferences: *Arduino > Preferences*
@@ -251,7 +251,7 @@ In order to be able to upload the code to the Arduino you have to setup the foll
     **Attention**: This can only be selected if your Arduino is actually attached to your computer!
 9. Open the sketch (if it's not already open): *File > Sketchbook > webusb_dmx512_controller*
 10. Verify that the sketch is working: *Sketch > Verify/Compile*. This will produce an output like this:
-  ```bash
+```sh
   Sketch uses 8258 bytes (28%) of program storage space. Maximum is 28672 bytes.
   Global variables use 888 bytes (34%) of dynamic memory, leaving 1672 bytes for local variables. Maximum is 2560 bytes.
 ```
