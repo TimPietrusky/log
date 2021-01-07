@@ -1,2 +1,1 @@
-# notes
-Notes of my life
+[2020](./2020.md)
