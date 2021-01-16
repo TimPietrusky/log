@@ -1,7 +1,16 @@
 ---
 ---
 
-$conifer: #fa12b4;
+$neonred: #fa12b4;
+$header: $neonred !default;
 
 @import "{{ site.theme }}";
+
+:root {
+  --color-dark: #1b1b1b;
+}
+
+body {
+    background: var(--color-dark);
+}
 
