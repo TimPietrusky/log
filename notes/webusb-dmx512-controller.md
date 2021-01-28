@@ -1,7 +1,7 @@
 # WebUSB DMX512 Controller
 
 TK webusb_dmx512_controller.jpg
-![WebUSB DMX512 controller](images/webusb_dmx512_controller.jpg)
+![WebUSB DMX512 controller](../images/webusb_dmx512_controller.jpg)
 
 I love to control all the lights and I always try to find new ways of doing so. Currently I'm in love with DMX512 and WebUSB.
 
@@ -26,7 +26,7 @@ DMX512 is used in many theaters, clubs and festivals to control all the lights a
 In my basement I have a collection of DMX512 lights:
 
 TK: newyears_eve_2017.jpg
-![New Years Eve 2017](images/newyears_eve_2017.jpg)
+![New Years Eve 2017](../images/newyears_eve_2017.jpg)
 
 ### How does it work?
 
@@ -56,7 +56,7 @@ I will describe two of my favorites fixtures to get started with DMX512.
 ##### Fog Machine
 
 TK Image of fog machine
-![Fog machine](images/fog_machine.jpg)
+![Fog machine](../images/fog_machine.jpg)
 
 The purpose of the ["AF-150" by Stairville](https://www.thomann.de/gb/stairville_af_150_dmx_fog_machine.htm) is to produce smoke. This helps to improve the visibility of the lights and the overall atmosphere.
 
@@ -71,7 +71,7 @@ Channel, Functionality, Description
 ##### Flat PAR
 
 TK Image of Flat PAR
-![Flat PAR](images/flat_par.jpg)
+![Flat PAR](../images/flat_par.jpg)
 
 Let's take a look at a very basic fixture:
 The ["SePar Quad LED RGBUV IR" by Fun Generation](https://www.thomann.de/gb/fun_generation_separ_quad_led_rgb_uv_ir.htm). What does all of this mean?
@@ -80,7 +80,7 @@ The ["SePar Quad LED RGBUV IR" by Fun Generation](https://www.thomann.de/gb/fun_
 * Quad LED RGBUV = The LEDs can create any RGB color and UV light at the same time
 * IR = Fixture can be controlled via infrared
 
-The [Flat PAR's manual](https://images.static-thomann.de/pics/atg/atgdata/document/manual/399604_c_399539_399604_r4_en_online.pdf) is more exciting than to the one of the Fog Machine, because the PAR has 8 channels in 4 different sets (2, 4, 6 or 8):
+The [Flat PAR's manual](https://../images.static-thomann.de/pics/atg/atgdata/document/manual/399604_c_399539_399604_r4_en_online.pdf) is more exciting than to the one of the Fog Machine, because the PAR has 8 channels in 4 different sets (2, 4, 6 or 8):
 
 
 ##### 2 Channels
@@ -132,7 +132,7 @@ Which set of channels should you use? That depends on what you actually want to 
 But where can we set that? Every fixture has some kind of interface that can be used to configure it. In many cases you will find a display and some buttons:
 
 TK flat_par_configure_channel_set_using_display.jpg
-![Flat PAR configure channel_set using display](images/flat_par_configure_channel_set_using_display.jpg)
+![Flat PAR configure channel_set using display](../images/flat_par_configure_channel_set_using_display.jpg)
 
 
 This display let's you change the configuration of the fixture, for example the set of channels that should be used.
@@ -140,7 +140,7 @@ This display let's you change the configuration of the fixture, for example the 
 It's also possible to set the address.
 
 TK flat_par_configure_address_using_display.jpg
-![Flat PAR configure address using display](images/flat_par_configure_address_using_display.jpg)
+![Flat PAR configure address using display](../images/flat_par_configure_address_using_display.jpg)
 
 ### Fixtures in a universe
 
@@ -162,7 +162,7 @@ Let's say we have three fixtures:
 The first fixture is a Flat PAR with the address of 1. Using the formula **1 + 6**, then the next fixture can start at **7**. Then we add the second Flat PAR at address **7** and the Fog Machine at address **13**.
 
 TK Image dmx512_universe_webusb_controller.png
-![DMX512 Universe](images/dmx512_universe_webusb_controller.png)
+![DMX512 Universe](../images/dmx512_universe_webusb_controller.png)
 
 The next thing we need is a WebUSB DMX512 controller to send the data (= an Array of 512 values) into the universe.
 
@@ -184,7 +184,7 @@ TK Separator
 This is the perfect foundation to create our own WebUSB DMX512 Controller, because some Arduino (like the [Arduino Leonardo](https://store.arduino.cc/arduino-leonardo-with-headers) with the [ATmega32U4](http://www.microchip.com/wwwproducts/en/ATmega32U4) chip) have the ability to be recognized by the computer as an external USB device. This makes it possible to use the Arduino over WebUSB.
 
 KT arduino_leonardo_explained.jpg
-![Arduino Leonardo](images/arduino_leonardo_explained.jpg)
+![Arduino Leonardo](../images/arduino_leonardo_explained.jpg)
 
 The Arduino has a set of female headers at the top with 18 connectors and the bottom with 14 connectors. They can be used to attach all kind of electronic devices or shields to the Arduino.
 
@@ -199,7 +199,7 @@ on tindie](https://www.tindie.com/products/Conceptinetics/25kv-isolated-dmx-512-
 Let's put it on top of the Arduino:
 
 TK webusb_dmx512_controller_explained.jpg
-![Arduino with DMX512 shield attached](images/webusb_dxm512_controller_explained.jpg)
+![Arduino with DMX512 shield attached](../images/webusb_dxm512_controller_explained.jpg)
 
 1. The DMX512 shield, with two DMX connectors (I and II). I is the output to send data into the universe. II is empty.
 2. The Arduino Leonardo, connected over MicroUSB to the computer.
@@ -241,11 +241,11 @@ npm install
 5. Open the preferences: *Arduino > Preferences*
 6. In the preferences dialog you have to change the *Sketchbook location* so that it points to the *sketchbook* folder that comes with the repository:
 
-  ![Arduino IDE: Change sketchbook location](images/arduino_ide_preferences_sketchbook_location.png)
+  ![Arduino IDE: Change sketchbook location](../images/arduino_ide_preferences_sketchbook_location.png)
 7. Close the Arduino IDE and then open it again (this is needed to load the new sketchbook that we selected in the step before)
 8. Now we need to configure the Arduino IDE so that it can recognize our Arduino Leonardo:
    1. Select the model: *Tools > Board > Arduino Leonardo (WebUSB)* (or one of the other supported boards underneath the *NERDDISCO: WebUSB DMX512 Controller* headline in the menu)
-     ![Arduino IDE: Select the Board](images/arduino_ide_select_board.png)
+     ![Arduino IDE: Select the Board](../images/arduino_ide_select_board.png)
    2. Select the USB port: *Tools > Port > /dev/tty.usbmodem$* (The $ is a placeholder and will be different for every Arduino you are using)
 
     **Attention**: This can only be selected if your Arduino is actually attached to your computer!
@@ -261,7 +261,7 @@ npm install
 
 When you are done your Arduino IDE should look like this:
 
-![Arduino IDE: Full verified sketch](images/arduino_ide_sketch_verified.png)
+![Arduino IDE: Full verified sketch](../images/arduino_ide_sketch_verified.png)
 
 
 ### Arduino Sketch
@@ -431,7 +431,7 @@ activateButton.addEventListener('click', e => {
 **(d)** Listen for click events on the button (which have to be triggered by the user)
 
 **(e)** This will enable WebUSB and open a dialog for the user in which they can select the Arduino. The dialog looks like this (Chrome on macOS):
-![Pair Arduino with Chrome](images/webusb_arduino_pair.png)
+![Pair Arduino with Chrome](../images/webusb_arduino_pair.png)
 
 **(f)** We can create a connection to the Arduino when *(e)* was successful
 
@@ -483,7 +483,7 @@ Now the fixture **(I)** is shining in bright red.
 
 TK flat_par_color_red_dimmer_255.jpg
 
-![Flat PAR shining in bright red](images/flat_par_color_red_dimmer_255.jpg)
+![Flat PAR shining in bright red](../images/flat_par_color_red_dimmer_255.jpg)
 
 Let's also set the color of fixture **(II)** (address: 7) to yellow and use a slow strobe (= blinking at low frequency):
 
@@ -531,7 +531,7 @@ In order to test the WebUSB DMX512 Controller directly in the browser, I have [c
 
 TK webusb_dmx512_controller_demo_explained.jpg
 
-![WebUSB DMX512 Controller: Demo](images/webusb_dmx512_controller_demo_explained.jpg)
+![WebUSB DMX512 Controller: Demo](../images/webusb_dmx512_controller_demo_explained.jpg)
 
 1. Activate WebUSB (& select the Arduino)
 2. Disconnect from the Arduino
