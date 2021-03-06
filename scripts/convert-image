@@ -1,0 +1,15 @@
+#!/bin/bash
+
+filename=$1
+
+if [ "$filename" ]; then
+    magick images/$filename.png -quality 1 -define webp:lossless=false -resize 660 images_minified/$filename.webp
+else 
+  echo "❌ Error"
+  echo "Please specify the name of the image-file that you want to convert without the file-extension"
+  echo "Example:"
+  echo "convert-image 20210220_schickmalzwo_mcproper_setup"
+  echo ""
+  echo "Info:"
+  echo "The image should be png and in the \"images\" folder"
+fi
