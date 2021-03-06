@@ -1,0 +1,27 @@
+#!/bin/bash
+
+filename=$1
+
+if [ "$filename" ]; then
+  actualsize=$(wc -c <"videos/$filename.mp4")
+
+  # Check if the file is bigger than 100 mb (the max file size on GitHub)
+  file_too_large=$(($actualsize / 1000000 <= 100))
+
+  if [ $file_too_large == 0 ]; then
+    echo "❌ Error"
+    echo "The file is bigger than 100 mb, which is the limit of GitHub!"
+  else
+    ffmpeg -i videos/$filename.mp4 -r 1 -ss 00:01 -t 00:01 videos/$filename.jpg && magick videos/$filename.jpg -quality 1 -define webp:lossless=false -resize 660 videos/$filename.webp
+    rm -f videos/$filename.jpg
+  fi
+else 
+  echo "❌ Error"
+  echo "Please specify the name of the video-file that you want to convert without the file-extension"
+  echo "Example:"
+  echo "convert-video 20210214_RainbowGridWave_video_1"
+  echo ""
+  echo "Info:"
+  echo "The video should be mp4 and in the \"videos\" folder"
+  echo "The first frame of the first second will be converted to JPG, then to webp, then the JPG will be deleted"
+fi
